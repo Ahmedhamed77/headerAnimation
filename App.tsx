@@ -1,453 +1,298 @@
-/* eslint-disable react/self-closing-comp */
-/* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {
-  Animated,
-  Text,
-  View,
-  Button,
-  Pressable,
-  ImageBackground,
-  Dimensions,
-  SafeAreaView,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native';
-
-const {height} = Dimensions.get('window');
+import React, {useRef, useState} from 'react';
+import {StyleSheet, Text, View, Animated, Image} from 'react-native';
 
 export default function App() {
+  //should be used instead of the if condition in onScroll,
+  //with condition the js thread works so it makes the animation slow
+  // but wit this even it will call the ui thread so it works faster
+  const scrollingY = useRef(new Animated.Value(0)).current;
   // IMAGE
-  const animationImageTranslateY = new Animated.Value(1);
-  const animationImageScale = new Animated.Value(1);
-  const animationImageBorderRadius = new Animated.Value(0);
-  const animationImagZIndex = new Animated.Value(0);
+  const imageTranslateYAnimation = new Animated.Value(1);
+  const imageTranslateXAnimation = new Animated.Value(1);
+  const imageScaleAnimation = new Animated.Value(1);
+  // BOX1
+  const box1TranslateYAnimation = new Animated.Value(1);
+  // BOX2
+  const box2TranslateYAnimation = new Animated.Value(1);
   // TEXT
-  const animationText = new Animated.Value(0);
-  // VIEW
-  const animationTranslateY = new Animated.Value(0);
-  const ViewOpacityAnimation = new Animated.Value(0);
+  const textTranslateYAnimation = new Animated.Value(1);
+  const textScaleAnimation = new Animated.Value(1);
+  // CONTAINER2
+  const container2BgAnimation = new Animated.Value(0);
 
-  const testPress = () => {
+  // container3
+  const container3TranslateYAnimation = new Animated.Value(1);
+  const container3BorderRadiusAnimation = new Animated.Value(0);
+
+  const container2Style = {
+    backgroundColor: container2BgAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['lightgreen', 'white'],
+    }),
+  };
+
+  const container3Style = {
+    borderRadius: container3BorderRadiusAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [30, 0],
+    }),
+    transform: [
+      {
+        translateY: container3TranslateYAnimation,
+      },
+    ],
+  };
+
+  const imageStyle = {
+    transform: [
+      {
+        translateY: imageTranslateYAnimation,
+      },
+      {
+        translateX: imageTranslateXAnimation,
+      },
+      {
+        scale: imageScaleAnimation,
+      },
+    ],
+  };
+  const textStyle = {
+    transform: [
+      {
+        translateY: textTranslateYAnimation,
+      },
+      {
+        scale: textScaleAnimation,
+      },
+    ],
+  };
+
+  const box1Style = {
+    transform: [
+      {
+        translateY: box1TranslateYAnimation,
+      },
+    ],
+  };
+  const box2Style = {
+    transform: [
+      {
+        translateY: box2TranslateYAnimation,
+      },
+    ],
+  };
+
+  const handlePress = () => {
     Animated.parallel([
-      Animated.timing(animationImageTranslateY, {
-        toValue: -200, //height to where the button will appear
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(animationImageScale, {
+      // IMAGE
+      Animated.timing(imageTranslateYAnimation, {
         toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(animationImageBorderRadius, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(animationImagZIndex, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(animationTranslateY, {
-        toValue: -450,
-        delay: 500,
         duration: 400,
         useNativeDriver: true,
       }),
-      Animated.timing(ViewOpacityAnimation, {
-        toValue: 1,
-        delay: 500,
+      Animated.timing(imageTranslateXAnimation, {
+        toValue: -40,
         duration: 400,
         useNativeDriver: true,
+      }),
+      Animated.timing(imageScaleAnimation, {
+        toValue: 0.3,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // TEXT
+      Animated.timing(textTranslateYAnimation, {
+        toValue: -90,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(textScaleAnimation, {
+        toValue: 0.5,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // BOX1
+      Animated.timing(box1TranslateYAnimation, {
+        toValue: -90,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(box2TranslateYAnimation, {
+        toValue: -90,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // CONTAINER2
+      Animated.timing(container2BgAnimation, {
+        toValue: 2, // check it
+        duration: 250,
+        delay: 200,
+        useNativeDriver: false, //Should be False, otherwise it will crash
       }),
 
-      Animated.timing(animationText, {
-        toValue: -480, //HEIGHT START OF THE SCREEN SO THE TEXT WILL PLACE IT
-        duration: 800,
+      // CONTAINER3
+
+      Animated.timing(container3TranslateYAnimation, {
+        toValue: -120,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(container3BorderRadiusAnimation, {
+        toValue: 1,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start();
   };
-  const handlePress = () => {
-    // Animated.parallel([
-    //   Animated.timing(animationImageTranslateY, {
-    //     toValue: -190,
-    //     duration: 600,
-    //     useNativeDriver: true,
-    //   }),
-    //   Animated.timing(animationImageScale, {
-    //     toValue: 0,
-    //     duration: 800,
-    //     useNativeDriver: true,
-    //   }),
-    //   Animated.timing(animationImageBorderRadius, {
-    //     toValue: 1,
-    //     duration: 500,
-    //     useNativeDriver: true,
-    //   }),
-    //   Animated.timing(animationImagZIndex, {
-    //     toValue: 1,
-    //     duration: 150,
-    //     useNativeDriver: true,
-    //   }),
 
-    //   Animated.timing(ViewOpacityAnimation, {
-    //     toValue: 1,
-    //     delay: 500,
-    //     duration: 400,
-    //     useNativeDriver: true,
-    //   }),
+  // ///// ///
 
-    //   Animated.timing(animationText, {
-    //     toValue: -520,
-    //     duration: 1000,
-    //     useNativeDriver: true,
-    //   }),
-    // ]).start();
-    console.log('object');
+  const handlePress2 = () => {
+    Animated.parallel([
+      // IMAGE
+      Animated.timing(imageTranslateYAnimation, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(imageTranslateXAnimation, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(imageScaleAnimation, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // TEXT
+      Animated.timing(textTranslateYAnimation, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(textScaleAnimation, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // BOX1
+      Animated.timing(box1TranslateYAnimation, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(box2TranslateYAnimation, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      // CONTAINER2
+      Animated.timing(container2BgAnimation, {
+        toValue: 0, // check it
+        duration: 250,
+        delay: 200,
+        useNativeDriver: false, //Should be False, otherwise it will crash
+      }),
+
+      // CONTAINER3
+
+      Animated.timing(container3TranslateYAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(container3BorderRadiusAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
-
-  console.log(animationImageTranslateY, 'animation');
-
-  const imageAnimatedStyle = {
-    transform: [
-      {
-        translateY: animationImageTranslateY,
-      },
-      {
-        scale: animationImageScale,
-      },
-    ],
-  };
-
-  const ViewStyle = {
-    opacity: ViewOpacityAnimation,
-    transform: [
-      {
-        translateY: animationTranslateY,
-      },
-    ],
-  };
-
-  const textStyle = {
-    transform: [
-      {
-        translateY: animationText,
-      },
-    ],
-  };
-
-  const borderRadius = animationImageBorderRadius.interpolate({
-    inputRange: [0, 1],
-    outputRange: [20, 420],
-  });
-
-  // animationImagZIndenx
-
-  const zIndex = animationImagZIndex.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1000, 0],
-  });
-
   return (
     <Animated.ScrollView
-      bounces={false}
-      // stickyHeaderIndices={[2]}
-      style={{backgroundColor: 'red'}}
-      onScroll={(event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      style={styles.container}
+      onScroll={event => {
+        //should be replaced with the animated scrolling.
         const scrolling = event.nativeEvent.contentOffset.y;
-
-        if (scrolling) {
-          console.log('yes');
-          console.log(scrolling, '===scrolling');
-          testPress();
-          //run animation
-        } else {
-          console.log('nooo');
-          // return animation
+        console.log(scrolling, 'scrolling');
+        // setScrollY(scrolling);
+        if (scrolling > 0.1) {
+          handlePress();
+        } else if (scrolling <= 0) {
+          handlePress2();
         }
       }}>
-      <Animated.View
-        style={[
-          {
-            height: 525,
-            width: '100%',
-            backgroundColor: 'red',
-            overflow: 'hidden',
-            zIndex,
-            borderRadius,
-          },
-          imageAnimatedStyle,
-        ]}>
-        <ImageBackground
-          style={{
-            height: '100%',
-            width: '100%',
-            backgroundColor: 'red',
-          }}
-          source={require('./assets/image2.png')}>
-          <Text>WE</Text>
-        </ImageBackground>
+      <Animated.View style={[styles.container2, container2Style]}>
+        <Animated.Image
+          source={require('./assets/dog.png')}
+          style={[styles.image, imageStyle]}
+        />
+        <Animated.Text style={[styles.text, textStyle]}>Dog</Animated.Text>
+        <Animated.Image
+          source={require('./assets/card1.png')}
+          style={[styles.card, box1Style]}
+        />
+        <Animated.Image
+          source={require('./assets/card2.png')}
+          style={[styles.card2, box2Style, {marginBottom: 50}]}
+        />
       </Animated.View>
-
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            width: '100%',
-            height: 525,
-            backgroundColor: 'green',
-            borderRadius,
-          },
-          imageAnimatedStyle,
-        ]}
-      />
-
-      <Animated.View
-        style={[
-          {
-            backgroundColor: '#4CA22F',
-            width: 120,
-            height: 35,
-            borderRadius: 24,
-            // position: 'absolute',
-
-            alignSelf: 'center',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 100,
-            overflow: 'hidden',
-          },
-          ViewStyle,
-        ]}>
-        <Pressable
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'orange',
-            width: '100%',
-            height: '100%',
-          }}>
-          <Text style={{color: 'white'}}>Hello</Text>
-        </Pressable>
-      </Animated.View>
-
-      <Animated.View style={[textStyle]}>
-        <Animated.Text>
-          // In publishing and graphic design, Lorem ipsum is a placeholder text
-          // commonly used to demonstrate the visual form of a document or a //
-          typeface without relying on meaningful content. Lorem ipsum may be //
-          used as a placeholder before final copy is available.In publishing and
-          // graphic design, Lorem ipsum is a placeholder text commonly used to
-          // demonstrate the visual form of a document or a typeface without //
-          relying on meaningful content. Lorem ipsum may be used as a //
-          placeholder before final copy is available.In publishing and graphic
-          // design, Lorem ipsum is a placeholder text commonly used to
-          demonstrate // the visual form of a document or a typeface without
-          relying on // meaningful content. Lorem ipsum may be used as a
-          placeholder before // final copy is available.In publishing and
-          graphic design, Lorem ipsum // is a placeholder text commonly used to
-          demonstrate the visual form of // a document or a typeface without
-          relying on meaningful content. Lorem // ipsum may be used as a
-          placeholder before final copy is available. //
-        </Animated.Text>
-        <Animated.Text>
-          // In publishing and graphic design, Lorem ipsum is a placeholder text
-          // commonly used to demonstrate the visual form of a document or a //
-          typeface without relying on meaningful content. Lorem ipsum may be //
-          used as a placeholder before final copy is available.In publishing and
-          // graphic design, Lorem ipsum is a placeholder text commonly used to
-          // demonstrate the visual form of a document or a typeface without //
-          relying on meaningful content. Lorem ipsum may be used as a //
-          placeholder before final copy is available.In publishing and graphic
-          // design, Lorem ipsum is a placeholder text commonly used to
-          demonstrate // the visual form of a document or a typeface without
-          relying on // meaningful content. Lorem ipsum may be used as a
-          placeholder before // final copy is available.In publishing and
-          graphic design, Lorem ipsum // is a placeholder text commonly used to
-          demonstrate the visual form of // a document or a typeface without
-          relying on meaningful content. Lorem // ipsum may be used as a
-          placeholder before final copy is available. //
-        </Animated.Text>
-        <Animated.Text>
-          // In publishing and graphic design, Lorem ipsum is a placeholder text
-          // commonly used to demonstrate the visual form of a document or a //
-          typeface without relying on meaningful content. Lorem ipsum may be //
-          used as a placeholder before final copy is available.In publishing and
-          // graphic design, Lorem ipsum is a placeholder text commonly used to
-          // demonstrate the visual form of a document or a typeface without //
-          relying on meaningful content. Lorem ipsum may be used as a //
-          placeholder before final copy is available.In publishing and graphic
-          // design, Lorem ipsum is a placeholder text commonly used to
-          demonstrate // the visual form of a document or a typeface without
-          relying on // meaningful content. Lorem ipsum may be used as a
-          placeholder before // final copy is available.In publishing and
-          graphic design, Lorem ipsum // is a placeholder text commonly used to
-          demonstrate the visual form of // a document or a typeface without
-          relying on meaningful content. Lorem // ipsum may be used as a
-          placeholder before final copy is available. //
-        </Animated.Text>
-
-        <Animated.Text>
-          // In publishing and graphic design, Lorem ipsum is a placeholder text
-          // commonly used to demonstrate the visual form of a document or a //
-          typeface without relying on meaningful content. Lorem ipsum may be //
-          used as a placeholder before final copy is available.In publishing and
-          // graphic design, Lorem ipsum is a placeholder text commonly used to
-          // demonstrate the visual form of a document or a typeface without //
-          relying on meaningful content. Lorem ipsum may be used as a //
-          placeholder before final copy is available.In publishing and graphic
-          // design, Lorem ipsum is a placeholder text commonly used to
-          demonstrate // the visual form of a document or a typeface without
-          relying on // meaningful content. Lorem ipsum may be used as a
-          placeholder before // final copy is available.In publishing and
-          graphic design, Lorem ipsum // is a placeholder text commonly used to
-          demonstrate the visual form of // a document or a typeface without
-          relying on meaningful content. Lorem // ipsum may be used as a
-          placeholder before final copy is available. //
-        </Animated.Text>
+      <Animated.View style={[styles.container3, container3Style]}>
+        <Text style={styles.text2}>Cat</Text>
+        {/* <Button onPress={handlePress} title="Press" />
+        <Button onPress={handlePress2} title="Press2" /> */}
+        <Image source={require('./assets/card2.png')} style={[styles.card2]} />
+        <Image source={require('./assets/card2.png')} style={[styles.card2]} />
+        <View style={{margin: 1000}} />
       </Animated.View>
     </Animated.ScrollView>
   );
 }
 
-// const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  container2: {
+    backgroundColor: 'lightgreen',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    marginTop: 50,
+    borderRadius: 50,
+    backgroundColor: 'yellow',
+  },
+  text: {
+    alignSelf: 'center',
+    marginVertical: 20,
+    fontSize: 30,
+  },
+  card: {
+    // width: '80%',
+    // height: 160,
 
-// <View
-// style={{
-//   // alignItems: 'center',
-//   // justifyContent: 'center',
-//   flex: 1,
-// }}>
-// <Animated.View
-//   style={[
-//     {
-//       height: 525,
-//       width: '100%',
-//       // backgroundColor: '#4CA22F',
-//       overflow: 'hidden',
-//       zIndex,
-
-//       borderRadius,
-//     },
-//     imageAnimatedStyle,
-//   ]}>
-//   <ImageBackground
-//     // col={10}
-//     style={{
-//       height: '100%',
-//       width: '100%',
-//     }}
-//     source={require('./assets/image2.png')}></ImageBackground>
-// </Animated.View>
-
-// <Animated.View
-//   style={[
-//     {
-//       position: 'absolute',
-//       width: '100%',
-//       height: 525,
-//       backgroundColor: 'green',
-//       borderRadius,
-//     },
-//     imageAnimatedStyle,
-//   ]}
-// />
-
-// <Animated.View
-//   style={[
-//     {
-//       backgroundColor: '#4CA22F',
-//       height: 32,
-//       width: 113,
-//       borderRadius: 24,
-//       position: 'absolute',
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       alignSelf: 'center',
-//       marginTop: 60,
-//       zIndex: 100,
-//     },
-//     ViewStyle,
-//   ]}>
-//   <Pressable>
-//     <Text style={{color: 'white'}}>Hello</Text>
-//   </Pressable>
-// </Animated.View>
-
-// {/* <ImageBackground source={} ></ImageBackground> */}
-// <Button title="Press" onPress={handlePress} />
-// <Animated.ScrollView
-//   style={[textStyle, {zIndex: 0, backgroundColor: 'gray'}]}>
-//   <Animated.Text>
-//     In publishing and graphic design, Lorem ipsum is a placeholder text
-//     commonly used to demonstrate the visual form of a document or a
-//     typeface without relying on meaningful content. Lorem ipsum may be
-//     used as a placeholder before final copy is available.In publishing and
-//     graphic design, Lorem ipsum is a placeholder text commonly used to
-//     demonstrate the visual form of a document or a typeface without
-//     relying on meaningful content. Lorem ipsum may be used as a
-//     placeholder before final copy is available.In publishing and graphic
-//     design, Lorem ipsum is a placeholder text commonly used to demonstrate
-//     the visual form of a document or a typeface without relying on
-//     meaningful content. Lorem ipsum may be used as a placeholder before
-//     final copy is available.In publishing and graphic design, Lorem ipsum
-//     is a placeholder text commonly used to demonstrate the visual form of
-//     a document or a typeface without relying on meaningful content. Lorem
-//     ipsum may be used as a placeholder before final copy is available.
-//   </Animated.Text>
-//   <Animated.Text>
-//     In publishing and graphic design, Lorem ipsum is a placeholder text
-//     commonly used to demonstrate the visual form of a document or a
-//     typeface without relying on meaningful content. Lorem ipsum may be
-//     used as a placeholder before final copy is available.In publishing and
-//     graphic design, Lorem ipsum is a placeholder text commonly used to
-//     demonstrate the visual form of a document or a typeface without
-//     relying on meaningful content. Lorem ipsum may be used as a
-//     placeholder before final copy is available.In publishing and graphic
-//     design, Lorem ipsum is a placeholder text commonly used to demonstrate
-//     the visual form of a document or a typeface without relying on
-//     meaningful content. Lorem ipsum may be used as a placeholder before
-//     final copy is available.In publishing and graphic design, Lorem ipsum
-//     is a placeholder text commonly used to demonstrate the visual form of
-//     a document or a typeface without relying on meaningful content. Lorem
-//     ipsum may be used as a placeholder before final copy is available.
-//   </Animated.Text>
-//   <Animated.Text>
-//     In publishing and graphic design, Lorem ipsum is a placeholder text
-//     commonly used to demonstrate the visual form of a document or a
-//     typeface without relying on meaningful content. Lorem ipsum may be
-//     used as a placeholder before final copy is available.In publishing and
-//     graphic design, Lorem ipsum is a placeholder text commonly used to
-//     demonstrate the visual form of a document or a typeface without
-//     relying on meaningful content. Lorem ipsum may be used as a
-//     placeholder before final copy is available.In publishing and graphic
-//     design, Lorem ipsum is a placeholder text commonly used to demonstrate
-//     the visual form of a document or a typeface without relying on
-//     meaningful content. Lorem ipsum may be used as a placeholder before
-//     final copy is available.In publishing and graphic design, Lorem ipsum
-//     is a placeholder text commonly used to demonstrate the visual form of
-//     a document or a typeface without relying on meaningful content. Lorem
-//     ipsum may be used as a placeholder before final copy is available.
-//   </Animated.Text>
-//   <Animated.Text>
-//     In publishing and graphic design, Lorem ipsum is a placeholder text
-//     commonly used to demonstrate the visual form of a document or a
-//     typeface without relying on meaningful content. Lorem ipsum may be
-//     used as a placeholder before final copy is available.In publishing and
-//     graphic design, Lorem ipsum is a placeholder text commonly used to
-//     demonstrate the visual form of a document or a typeface without
-//     relying on meaningful content. Lorem ipsum may be used as a
-//     placeholder before final copy is available.In publishing and graphic
-//     design, Lorem ipsum is a placeholder text commonly used to demonstrate
-//     the visual form of a document or a typeface without relying on
-//     meaningful content. Lorem ipsum may be used as a placeholder before
-//     final copy is available.In publishing and graphic design, Lorem ipsum
-//     is a placeholder text commonly used to demonstrate the visual form of
-//     a document or a typeface without relying on meaningful content. Lorem
-//     ipsum may be used as a placeholder before final copy is available.
-//   </Animated.Text>
-// </Animated.ScrollView>
-// </View>
+    alignSelf: 'center',
+  },
+  card2: {
+    alignSelf: 'center',
+    marginTop: 25,
+  },
+  container3: {
+    backgroundColor: 'white',
+    flex: 1,
+    bottom: 20,
+    // borderTopLeftRadius: 30,
+    // borderTopRightRadius: 30,
+    // position: 'absolute',
+    // width: '100%',
+    // marginTop: 530,
+  },
+  text2: {
+    marginVertical: 20,
+    marginHorizontal: 50,
+  },
+});
